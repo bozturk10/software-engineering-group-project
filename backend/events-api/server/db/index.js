@@ -21,15 +21,15 @@ const pool = mysql.createPool({
     port: '25060'
 });
 
-let userdb = {};
+let db = {};
 
-userdb.all = () => {
+db.all = () => {
 
     return new Promise((resolve, reject) => {
 
         pool.query(`SELECT * FROM Users`, (err, results) => {
             if(err){
-                console.log('DB ERROR');
+                console.log('ERROR: .all()');
                 return reject(err);
             }
 
@@ -38,4 +38,17 @@ userdb.all = () => {
     });
 };
 
-module.exports = userdb;
+db.getById = (id) => {
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE id = ?`, [id] ,(err, results) => {
+            if(err){
+                console.log('ERROR: .getById()');
+                return reject(err);
+            }
+
+            return resolve(results[0]);
+        });
+    } );
+};
+
+module.exports = db;
