@@ -2,11 +2,11 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 
-router.get('/', async (req, res, next) => {
+router.get('/users/', async (req, res, next) => {
 
     
     try{
-        let results = await db.all();
+        let results = await db.getAllUsers();
         res.json(results);
     }catch(e){
         console.log(e);
@@ -15,9 +15,9 @@ router.get('/', async (req, res, next) => {
 
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/users/:id', async (req, res, next) => {
     try{
-        let results = await db.getById(req.params.id);
+        let results = await db.getUserById(req.params.id);
         res.json(results);
     }catch(e){
         console.log(e);
@@ -25,4 +25,24 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
+router.get('/events/', async (req, res, next) => {
+    try {
+        let results = await db.getEvents();
+        res.json(results);
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
+
+router.get('/events/:id', async (req, res, next) => {
+    try {
+        let results = await db.getEventById(req.params.id);
+        res.json(results);
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
+ 
 module.exports = router;

@@ -23,7 +23,7 @@ const pool = mysql.createPool({
 
 let db = {};
 
-db.all = () => {
+db.getAllUsers = () => {
 
     return new Promise((resolve, reject) => {
 
@@ -38,11 +38,37 @@ db.all = () => {
     });
 };
 
-db.getById = (id) => {
+db.getUserById = (id) => {
     return new Promise( (resolve, reject) => {
         pool.query(`SELECT * FROM Users WHERE id = ?`, [id] ,(err, results) => {
             if(err){
-                console.log('ERROR: .getById()');
+                console.log('ERROR: .getUserById()');
+                return reject(err);
+            }
+
+            return resolve(results[0]);
+        });
+    } );
+};
+
+db.getEvents = () => {
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Events`, (err, results) => {
+            if(err){
+                console.log('ERROR: .getEvents()');
+                return reject(err);
+            }
+
+            return resolve(results);
+        });
+    });
+};
+
+db.getEventById = (id) => {
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Events WHERE eId = ?`, [id] ,(err, results) => {
+            if(err){
+                console.log('ERROR: .getUserById()');
                 return reject(err);
             }
 
