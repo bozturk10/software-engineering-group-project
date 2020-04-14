@@ -1,10 +1,18 @@
 const express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+
 const db = require('../db');
 const router = express.Router();
 
-router.get('/users/', async (req, res, next) => {
+//Login Auth Api
 
-    
+
+
+
+// CRUD Apis
+router.get('/users/', async (req, res, next) => {
+   
     try{
         let results = await db.getAllUsers();
         res.json(results);
