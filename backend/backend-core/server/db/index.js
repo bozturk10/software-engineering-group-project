@@ -74,7 +74,21 @@ db.getEventById = (id) => {
 
             return resolve(results[0]);
         });
-    } );
+    });
+};
+
+db.authLogin = (uname, pass) =>{
+    console.log(uname, pass);
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE name = ? AND password = ?`, [uname, pass] ,(err, results) => {
+            if(err){
+                console.log('ERROR: .authLogin()');
+                return reject(err);
+            }
+            //console.log(results);
+            return resolve(results);
+        });
+    });
 };
 
 module.exports = db;

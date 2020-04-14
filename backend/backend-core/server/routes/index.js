@@ -1,56 +1,25 @@
-const express = require('express');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-
-const db = require('../db');
+//Index Router
+const session = require('express-session');
 const router = express.Router();
+var path = require('path');
 
-//Login Auth Api
-
-
-
-
-// CRUD Apis
-router.get('/users/', async (req, res, next) => {
-   
-    try{
-        let results = await db.getAllUsers();
-        res.json(results);
-    }catch(e){
+router.get('/check', async (req, res) => {
+    try {
+        res.send({status: 'ok'});
+    } catch (error) {
         console.log(e);
         res.sendStatus(500);
     }
-
 });
 
-router.get('/users/:id', async (req, res, next) => {
+router.get('/login', async (req, res) => {
     try{
-        let results = await db.getUserById(req.params.id);
-        res.json(results);
+        res.sendFile(path.resolve('login.html'));
     }catch(e){
         console.log(e);
         res.sendStatus(500);
     }
 });
 
-router.get('/events/', async (req, res, next) => {
-    try {
-        let results = await db.getEvents();
-        res.json(results);
-    } catch (e) {
-        console.log(e);
-        res.sendStatus(500);
-    }
-})
 
-router.get('/events/:id', async (req, res, next) => {
-    try {
-        let results = await db.getEventById(req.params.id);
-        res.json(results);
-    } catch (e) {
-        console.log(e);
-        res.sendStatus(500);
-    }
-})
- 
 module.exports = router;
