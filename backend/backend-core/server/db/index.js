@@ -23,6 +23,9 @@ const pool = mysql.createPool({
 
 let db = {};
 
+
+/* ****************  User Apis    ***************** */
+//
 db.getAllUsers = () => {
 
     return new Promise((resolve, reject) => {
@@ -40,7 +43,7 @@ db.getAllUsers = () => {
 
 db.getUserById = (id) => {
     return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Users WHERE id = ?`, [id] ,(err, results) => {
+        pool.query(`SELECT * FROM Users WHERE uid = ?`, [id] ,(err, results) => {
             if(err){
                 console.log('ERROR: .getUserById()');
                 return reject(err);
@@ -50,6 +53,40 @@ db.getUserById = (id) => {
         });
     } );
 };
+
+db.getUserByUname = (uname) => {
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE username = ?`, [uname] ,(err, results) => {
+            if(err){
+                console.log('ERROR: .getUserById()');
+                return reject(err);
+            }
+
+            return resolve(results[0]);
+        });
+    });
+};
+
+db.addNewUser = (uname, password, email) =>{
+
+    return new Promise( (resolve, reject) => {
+
+        pool.query(`INSERT INTO Users (username, password, email)VALUES (?, ?, ?);`, [uname, password, email], (err) => {
+            if(err){
+                console.log('ERROR: .addNewUser()');
+                return reject(err);
+            }
+            
+            return resolve({ message: 'new user added successfully'});
+        });
+    });
+}
+
+//---TO-DO---
+//db.addNewLocalAdmin = () => {}
+
+/* ****************  Event Apis    ***************** */
+//
 
 db.getEvents = () => {
     return new Promise( (resolve, reject) => {
@@ -77,10 +114,31 @@ db.getEventById = (id) => {
     });
 };
 
+db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
+    return new Promise( (resolve, reject)=> {
+        pool.query(`INSERT INTO Events (title, detail, address, date, capacity, imagePath, status)
+                    VALUES( ?, ?, ?, ?, ?, ?, 'ACTIVE');`
+                    , [title, detail, address, date, capacity, imagePath], (err, results) => {
+            
+                if(err){
+                    console.log('ERROR: .addNewEvent()');
+                    return reject(err);
+                }
+
+                return resolve({ message: 'new event added successfully'});
+        });
+    });
+};
+/*
+    
+
+*/
+/* ****************  Login Authentication    ***************** */
+//
+
 db.authLogin = (uname, pass) =>{
-    console.log(uname, pass);
     return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Users WHERE name = ? AND password = ?`, [uname, pass] ,(err, results) => {
+        pool.query(`SELECT * FROM Users WHERE username = ? AND password = ?`, [uname, pass] ,(err, results) => {
             if(err){
                 console.log('ERROR: .authLogin()');
                 return reject(err);

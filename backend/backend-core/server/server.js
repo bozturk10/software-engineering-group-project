@@ -7,13 +7,14 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+//Servin api calls
+app.use('/api', apiRouter);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.json());
 
-//Servin api calls
-app.use('/api', apiRouter);
-
+//App
 app.use(session({
 	secret: 'secret',
 	resave: true,
