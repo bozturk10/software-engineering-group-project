@@ -137,6 +137,7 @@ db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
 //
 
 db.authLogin = (uname, pass) =>{
+    
     return new Promise( (resolve, reject) => {
         pool.query(`SELECT * FROM Users WHERE username = ? AND password = ?`, [uname, pass] ,(err, results) => {
             if(err){

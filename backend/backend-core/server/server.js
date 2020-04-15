@@ -3,6 +3,8 @@ const session = require('express-session');
 const apiRouter = require('./routes/api');
 const db = require('./db');
 var path = require('path');
+// TO-DO Encrypt password before sending to database
+//const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -18,7 +20,9 @@ app.use(express.json());
 app.use(session({
 	secret: 'secret',
 	resave: true,
-	saveUninitialized: true
+    saveUninitialized: true,
+    //Session expires after a minute
+    cookie: { maxAge: 60000 },
 }));
 
 app.get('/check', async (req, res) => {
@@ -40,7 +44,6 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/auth', async function(request, response) {
-    console.log("AUTH REQUEST");
     console.log(request.body);
     var username = request.body.username;
     var password = request.body.password;
