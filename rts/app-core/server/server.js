@@ -16,14 +16,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.json());
 
-//App
-app.use(session({
-	secret: 'secret',
-	resave: true,
-    saveUninitialized: true,
-    //Session expires after a minute
-    cookie: { maxAge: 60000 },
-}));
+
+const staticPath = path.resolve(__dirname, '..', 'static');
+console.log('static path: ', staticPath);
+
+//Html static file root 
+app.use(express.static(process.cwd() + '/static'));
+
+console.log("Current directory:", __dirname); 
+
 
 app.get('/check', async (req, res) => {
     try {
@@ -34,9 +35,28 @@ app.get('/check', async (req, res) => {
     }
 });
 
+
+//App
+app.use(session({
+	secret: 'secret',
+	resave: true,
+    saveUninitialized: true,
+    //Session expires after a minute
+    cookie: { maxAge: 60000 },
+}));
+
+app.get('/test', (req, res) => {
+    try{
+        res.sendFile(path.resolve('static/web-pages/event-pages/home.html'));
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
 app.get('/login', (req, res) => {
     try{
-        res.sendFile(path.resolve('login.html'));
+        res.sendFile(path.resolve('static/login.html'));
     }catch(e){
         console.log(e);
         res.sendStatus(500);

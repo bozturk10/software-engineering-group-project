@@ -12,6 +12,7 @@ router.get('/users/', async (req, res) => {
    
     try{
         let results = await db.getAllUsers();
+        res.sendFile
         res.json(results);
     }catch(e){
         console.log(e);
@@ -33,6 +34,7 @@ router.get('/users/:id', async (req, res, next) => {
 router.post('/users/add', async (req, res) => {
     try {
         console.log('Request Body: ', req.body );
+        
         let result = await db.addNewUser(req.body.username, req.body.password, req.body.email);
         res.json(result);
     } catch (e) {
