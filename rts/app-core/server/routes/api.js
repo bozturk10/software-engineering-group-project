@@ -2,6 +2,26 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 const bodyParser = require('body-parser');
+
+/*  //Image Upload Api
+
+const multer = require('multer');
+
+var Storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, "./Images");
+    },
+    filename: function(req, file, callback) {
+        callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    }
+});
+
+var upload = multer({   dest:'uploads/',
+                        storage: Storage
+                    }).array("imgUploader", 3); //Field name and max count
+
+ */
+
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended : true}));
 
@@ -74,6 +94,21 @@ router.post('/events/add', async (req, res) => {
         console.log(e);
         res.sendStatus(500);
     }
-})
+});
+
+
+//image upload api
+
+/* router.post('/event/upload/image', upload.single(eventImage), async (req, res) => {
+    console.log(req.file);
+    upload(req, res, function(err) {
+        if (err) {
+            return res.end("Something went wrong!");
+        }
+        return res.end("File uploaded sucessfully!.");
+    });
+
+}); */
+
 
 module.exports = router;

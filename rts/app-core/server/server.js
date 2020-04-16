@@ -16,14 +16,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(express.json());
 
-
 const staticPath = path.resolve(__dirname, '..', 'static');
-console.log('static path: ', staticPath);
-
 //Html static file root 
 app.use(express.static(process.cwd() + '/static'));
 
 console.log("Current directory:", __dirname); 
+console.log('static path: ', staticPath);
 
 
 app.get('/check', async (req, res) => {
@@ -35,28 +33,27 @@ app.get('/check', async (req, res) => {
     }
 });
 
-
 //App
 app.use(session({
 	secret: 'secret',
 	resave: true,
     saveUninitialized: true,
     //Session expires after a minute
-    cookie: { maxAge: 60000 },
+    cookie: { maxAge: 300000 },
 }));
 
-app.get('/test', (req, res) => {
-    try{
-        res.sendFile(path.resolve('static/web-pages/event-pages/home.html'));
-    }catch(e){
+app.get('/home', (req, res) => {
+    try {
+        res.sendFile(path.resolve('static/web-pages/home.html'));
+    } catch (e) {
         console.log(e);
         res.sendStatus(500);
     }
-});
+})
 
 app.get('/login', (req, res) => {
     try{
-        res.sendFile(path.resolve('static/login.html'));
+        res.sendFile(path.resolve('static/web-pages/login-signup/login-user.html'));
     }catch(e){
         console.log(e);
         res.sendStatus(500);
@@ -64,7 +61,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/auth', async function(request, response) {
-    console.log(request.body);
+    console.log('Authentication request: ',request.body);
     var username = request.body.username;
     var password = request.body.password;
 
@@ -78,7 +75,7 @@ app.post('/auth', async function(request, response) {
 				request.session.loggedin = true;
                 request.session.username = username;
                 //response.json(results);
-				response.redirect('/home');
+				response.redirect('/events');
 			} else {
                 //response.json({warning: "Incorrect credentials"});
 				response.send('Incorrect Username and/or Password!');
@@ -96,15 +93,20 @@ app.post('/auth', async function(request, response) {
 	}
 });
 
-app.get('/home', function(request, response) {
-	if (request.session.loggedin) {
-		response.send('Welcome back, ' + request.session.username + '!');
-	} else {
-		response.send('Please login to view this page!');
-	}
-	response.end();
+app.get('/events', function (req, res) {
+    try{
+        if(req.session.loggedin){
+            //res.send('Welcome back, ' + req.session.username + '!');
+            res.sendFile(path.resolve('static/web-pages/event-pages/events.html'));
+        }
+        else {
+            res.send('Please login to view this page!');
+        } 
+    }catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
 });
-
 
 app.listen(process.env.PORT || '3000', () => {
     console.log(`Server is running on port: ${process.env.PORT || '3000' }`);
