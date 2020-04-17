@@ -6,24 +6,6 @@ var path = require('path');
 // TO-DO Encrypt password before sending to database
 //const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
-const multer = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, path.resolve('./uploads'))
-    },
-    filename: function (req, file, cb) {
-        let ts = Date.now();
-
-        let date_ob = new Date(ts);
-        let date = date_ob.getDate();
-        let month = date_ob.getMonth() + 1;
-        let year = date_ob.getFullYear();
-        cb(null,  year + "-" + month + "-" + date + "_" + file.originalname);  
-    }
-  });
-   
-  var upload = multer({ storage: storage });
-
 
 const app = express();
 
@@ -51,33 +33,14 @@ app.get('/check', async (req, res) => {
     }
 });
 
-app.get('/up',async (req, res)=>{
+//Call admin dashboard page TO ADD NEW EVENT
+app.get('/new-event', (req, res) => {
     try{
-        console.log("icerdeyiz");
-        res.sendFile(path.resolve('static/upload.html'));
+        res.sendFile(path.resolve('static/web-pages/admin-dashboard/add_event.html'));
     }catch(er){
         throw er;
     }
 });
-
-app.post('/uploadfile', upload.single('myFile') ,async (req, res) => {
-    try {
-        const file = req.file;
-        console.log("File", file.size);
-        if (!file) {
-            console.log("No file received");
-            const error = new Error('Please upload a file')
-            error.httpStatusCode = 400
-            return next(error)
-        }
-        console.log('file received');
-        res.send(file);
-  
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-})
 
 //App
 app.use(session({
@@ -88,7 +51,7 @@ app.use(session({
     cookie: { maxAge: 3600000 },
 }));
 
-app.get('', (req, res) => {
+app.get('/', (req, res) => {
     try {
         res.sendFile(path.resolve('static/web-pages/home.html'));
     } catch (e) {

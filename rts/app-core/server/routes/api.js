@@ -2,25 +2,24 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 const bodyParser = require('body-parser');
-
-/*  //Image Upload Api
-
 const multer = require('multer');
+var path = require('path');
 
-var Storage = multer.diskStorage({
-    destination: function(req, file, callback) {
-        callback(null, "./Images");
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        console.log("Destination path:  ", path.resolve('./uploads'));
+        cb(null, path.resolve('./uploads'))
     },
-    filename: function(req, file, callback) {
-        callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    filename: (req, file, cb) => {
+        let ts = Date.now();
+        cb(null, ts + '_' + file.originalname );  
     }
-});
+  });
+   
+var upload = multer({ storage: storage });
 
-var upload = multer({   dest:'uploads/',
-                        storage: Storage
-                    }).array("imgUploader", 3); //Field name and max count
+//Image Upload Api
 
- */
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended : true}));
@@ -74,6 +73,7 @@ router.get('/events/', async (req, res, next) => {
     }
 });
 
+//get event by id
 router.get('/events/:id', async (req, res) => {
     try {
         let results = await db.getEventById(req.params.id);
@@ -84,7 +84,9 @@ router.get('/events/:id', async (req, res) => {
     }
 });
  
-router.post('/events/add', async (req, res) => {
+
+//Add event without image upload
+/* router.post('/events/add', async (req, res) => {
     try {
         console.log('Request Body: ', req.body );
         let result = await db.addNewEvent(req.body.title, req.body.detail, req.body.address, req.body.date, 
@@ -94,21 +96,78 @@ router.post('/events/add', async (req, res) => {
         console.log(e);
         res.sendStatus(500);
     }
+}); */
+
+
+// Add events with image upload
+router.post('/events/add', upload.single('myFile') ,async (req, res, next) => {
+
+    try {
+        console.log("Attached file: ", req.file); 
+        console.log("Request body: ",req.body);       
+        const file = req.file;
+        
+        if (!file) {
+            console.log("No file received");
+            res.send("No File is attached. Please add a file");
+        }
+
+        let filePath = file.destination + '/' + file.filename;
+        console.log("file received: ", filePath);
+
+        var title = ((req.body.title == '') ? 'NULL' : req.body.title);
+        var detail = ((req.body.detail == '') ? 'NULL' : req.body.detail);
+        var address = ((req.body.address == '') ? 'NULL' : req.body.address);
+        var date = ((req.body.date == '') ? '2020-10-10' : req.body.date);
+        var capacity = ((req.body.capacity == '') ? 0 : req.body.capacity);
+        console.log(title, detail, address, date, capacity, filePath);
+
+        let db_result = await db.addNewEvent(title, detail, address, date, capacity, filePath);
+        res.sendFile(filePath);
+  
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 });
 
 
-//image upload api
-
-/* router.post('/event/upload/image', upload.single(eventImage), async (req, res) => {
-    console.log(req.file);
-    upload(req, res, function(err) {
-        if (err) {
-            return res.end("Something went wrong!");
+//Generic file upload request
+/* 
+    const multer = require('multer');
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, path.resolve('./<yor destination path>'));
+        },
+        filename: function (req, file, cb) {
+            let ts = Date.now();
+            let date_ob = new Date(ts);
+            let date = date_ob.getDate();
+            let month = date_ob.getMonth() + 1;
+            let year = date_ob.getFullYear();
+            cb(null,  year + "-" + month + "-" + date + "_" + file.originalname);  
         }
-        return res.end("File uploaded sucessfully!.");
-    });
+    });   
+    var uploader = multer({ storage: storage });
+    router.post('/uploadfile', uploader.single('filename') ,async (req, res) => {
+        try {
+            const file = req.file;
+            console.log("Attached file: ", file);
+            if (!file) {
+                console.log("No file received");
+                const error = new Error('Please upload a file')
+                error.httpStatusCode = 400
+                return next(error)
+            }
+            console.log('file received');
+            res.send(file);
+    
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }) 
 
-}); */
-
+*/
 
 module.exports = router;

@@ -23,9 +23,6 @@ const pool = mysql.createPool({
 
 let db = {};
 
-
-/* ****************  User Apis    ***************** */
-//
 db.getAllUsers = () => {
 
     return new Promise((resolve, reject) => {
@@ -85,8 +82,6 @@ db.addNewUser = (uname, password, email) =>{
 //---TO-DO---
 //db.addNewLocalAdmin = () => {}
 
-/* ****************  Event Apis    ***************** */
-//
 
 db.getEvents = () => {
     return new Promise( (resolve, reject) => {
@@ -116,6 +111,7 @@ db.getEventById = (id) => {
 
 db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
     return new Promise( (resolve, reject)=> {
+        //TO-DO Check If the required parameters are empty or not. If so send NUll
         pool.query(`INSERT INTO Events (title, detail, address, date, capacity, imagePath, status)
                     VALUES( ?, ?, ?, ?, ?, ?, 'ACTIVE');`
                     , [title, detail, address, date, capacity, imagePath], (err, results) => {
