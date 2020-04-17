@@ -7,8 +7,9 @@ var path = require('path');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log("Destination path:  ", path.resolve('./uploads'));
-        cb(null, path.resolve('./uploads'))
+        let destPath = path.resolve('./static/uploads');
+        console.log("Destination path:  ", destPath );
+        cb(null, destPath);
     },
     filename: (req, file, cb) => {
         let ts = Date.now();
@@ -112,7 +113,8 @@ router.post('/events/add', upload.single('myFile') ,async (req, res, next) => {
             res.send("No File is attached. Please add a file");
         }
 
-        let filePath = file.destination + '/' + file.filename;
+        //Relative to static directory
+        let filePath = 'uploads/'+ file.filename;
         console.log("file received: ", filePath);
 
         var title = ((req.body.title == '') ? 'NULL' : req.body.title);
@@ -123,7 +125,7 @@ router.post('/events/add', upload.single('myFile') ,async (req, res, next) => {
         console.log(title, detail, address, date, capacity, filePath);
 
         let db_result = await db.addNewEvent(title, detail, address, date, capacity, filePath);
-        res.sendFile(filePath);
+        res.json({message:'event is added'});
   
     } catch (error) {
         console.log(error);

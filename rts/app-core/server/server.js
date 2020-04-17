@@ -111,6 +111,8 @@ app.post('/auth', async function(request, response) {
 	}
 });
 
+//TO-DO app.post('/logout')
+
 app.get('/events', function (req, res) {
     try{
         if(req.session.loggedin){
