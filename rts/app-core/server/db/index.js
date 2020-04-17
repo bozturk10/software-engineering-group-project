@@ -67,11 +67,11 @@ db.getUserByUname = (uname) => {
     });
 };
 
-db.addNewUser = (uname, password, email) =>{
+db.addNewUser = (uname, password, email,name, surname) =>{
 
     return new Promise( (resolve, reject) => {
 
-        pool.query(`INSERT INTO Users (username, password, email)VALUES (?, ?, ?);`, [uname, password, email], (err) => {
+        pool.query(`INSERT INTO Users (username, password, email, name, surname)VALUES (?, ?, ?, ?, ?);`, [uname, password, email, name, surname], (err) => {
             if(err){
                 console.log('ERROR: .addNewUser()');
                 return reject(err);
@@ -149,5 +149,6 @@ db.authLogin = (uname, pass) =>{
         });
     });
 };
+
 
 module.exports = db;

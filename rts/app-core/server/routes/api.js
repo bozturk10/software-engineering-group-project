@@ -55,7 +55,7 @@ router.post('/users/add', async (req, res) => {
     try {
         console.log('Request Body: ', req.body );
         
-        let result = await db.addNewUser(req.body.username, req.body.password, req.body.email);
+        let result = await db.addNewUser(req.body.uname, req.body.password, req.body.email, req.body.name, req.body.surname);
         res.json(result);
     } catch (e) {
         console.log(e);
