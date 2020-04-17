@@ -33,14 +33,32 @@ app.get('/check', async (req, res) => {
     }
 });
 
+//Call admin dashboard page TO ADD NEW EVENT
+app.get('/new-event', (req, res) => {
+    try{
+        res.sendFile(path.resolve('static/web-pages/admin-dashboard/add_event.html'));
+    }catch(er){
+        throw er;
+    }
+});
+
 //App
 app.use(session({
     secret: 'secret',
     resave: true,
     saveUninitialized: true,
     //Session expires after a minute
-    cookie: { maxAge: 300000 },
+    cookie: { maxAge: 3600000 },
 }));
+
+app.get('/', (req, res) => {
+    try {
+        res.sendFile(path.resolve('static/web-pages/home.html'));
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
 
 app.get('/home', (req, res) => {
     try {
