@@ -11,6 +11,7 @@ sslmode = REQUIRED
 */
 
 const mysql = require('mysql');
+let userID;
 
 const pool = mysql.createPool({
     connectionLimit: 10,
@@ -28,7 +29,7 @@ db.getAllUsers = () => {
     return new Promise((resolve, reject) => {
 
         pool.query(`SELECT * FROM Users`, (err, results) => {
-            if(err){
+            if (err) {
                 console.log('ERROR: .all()');
                 return reject(err);
             }
@@ -39,22 +40,9 @@ db.getAllUsers = () => {
 };
 
 db.getUserById = (id) => {
-    return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Users WHERE uid = ?`, [id] ,(err, results) => {
-            if(err){
-                console.log('ERROR: .getUserById()');
-                return reject(err);
-            }
-
-            return resolve(results[0]);
-        });
-    } );
-};
-
-db.getUserByUname = (uname) => {
-    return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Users WHERE username = ?`, [uname] ,(err, results) => {
-            if(err){
+    return new Promise((resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE uid = ?`, [id], (err, results) => {
+            if (err) {
                 console.log('ERROR: .getUserById()');
                 return reject(err);
             }
@@ -64,29 +52,86 @@ db.getUserByUname = (uname) => {
     });
 };
 
-db.addNewUser = (uname, password, email,name, surname) =>{
+db.getUserByUname = (uname) => {
+    return new Promise((resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE username = ?`, [uname], (err, results) => {
+            if (err) {
+                console.log('ERROR: .getUserById()');
+                return reject(err);
+            }
 
-    return new Promise( (resolve, reject) => {
+            return resolve(results[0]);
+        });
+    });
+};
+
+db.addNewUser = (uname, password, email, name, surname) => {
+
+    return new Promise((resolve, reject) => {
 
         pool.query(`INSERT INTO Users (username, password, email, name, surname)VALUES (?, ?, ?, ?, ?);`, [uname, password, email, name, surname], (err) => {
-            if(err){
+            if (err) {
                 console.log('ERROR: .addNewUser()');
                 return reject(err);
             }
-            
-            return resolve({ message: 'new user added successfully'});
+
+            return resolve({ message: 'new user added successfully' });
         });
     });
 }
 
 //---TO-DO---
-//db.addNewLocalAdmin = () => {}
+db.addNewLocalAdmin = (cuname, cpassword, cemail, atype) => {
+
+    return new Promise((resolve, reject) => {
+
+        pool.query(`INSERT INTO Users (username, password, email, usertype)VALUES (?, ?, ?, ?);`, [cuname, cpassword, cemail, atype], (err) => {
+            if (err) {
+                console.log('ERROR: .addNewLocalAdmin()');
+                return reject(err);
+            }
+
+            return resolve({ message: 'new company added successfully' });
+        });
+    });
+}
+
+db.addNewCompany = (cuname, cname, caddress, imagePath) => {
+
+    return new Promise((resolve, reject) => {
+
+        pool.query(`SELECT * FROM Users WHERE username = ?`, [cuname], (err, results) => {
+
+
+            if (err) {
+                console.log('ERROR: .getUserById()');
+                return reject(err);
+            }
+
+            var string = JSON.stringify(results);
+            var json = JSON.parse(string);
+            userID = json[0].uid;
+
+            pool.query(`INSERT INTO Companies (name,adminId,companyAddress,imagePath)VALUES (?, ?, ?, ?);`, [cname, userID, caddress, imagePath], (err) => {
+                if (err) {
+                    console.log('ERROR: .addNewLocalAdmin()');
+                    return reject(err);
+                }
+
+                return resolve({ message: 'new company added successfully' });
+            });
+        });
+    });
+}
+
+
+
 
 
 db.getEvents = () => {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         pool.query(`SELECT * FROM Events`, (err, results) => {
-            if(err){
+            if (err) {
                 console.log('ERROR: .getEvents()');
                 return reject(err);
             }
@@ -97,9 +142,9 @@ db.getEvents = () => {
 };
 
 db.getEventById = (id) => {
-    return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Events WHERE eId = ?`, [id] ,(err, results) => {
-            if(err){
+    return new Promise((resolve, reject) => {
+        pool.query(`SELECT * FROM Events WHERE eId = ?`, [id], (err, results) => {
+            if (err) {
                 console.log('ERROR: .getUserById()');
                 return reject(err);
             }
@@ -110,19 +155,19 @@ db.getEventById = (id) => {
 };
 
 db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
-    return new Promise( (resolve, reject)=> {
+    return new Promise((resolve, reject) => {
         //TO-DO Check If the required parameters are empty or not. If so send NUll
         pool.query(`INSERT INTO Events (title, detail, address, date, capacity, imagePath, status)
                     VALUES( ?, ?, ?, ?, ?, ?, 'ACTIVE');`
-                    , [title, detail, address, date, capacity, imagePath], (err, results) => {
-            
-                if(err){
+            , [title, detail, address, date, capacity, imagePath], (err, results) => {
+
+                if (err) {
                     console.log('ERROR: .addNewEvent()');
                     return reject(err);
                 }
 
-                return resolve({ message: 'new event added successfully'});
-        });
+                return resolve({ message: 'new event added successfully' });
+            });
     });
 };
 /*
@@ -132,11 +177,11 @@ db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
 /* ****************  Login Authentication    ***************** */
 //
 
-db.authLogin = (uname, pass) =>{
-    
-    return new Promise( (resolve, reject) => {
-        pool.query(`SELECT * FROM Users WHERE username = ? AND password = ?`, [uname, pass] ,(err, results) => {
-            if(err){
+db.authLogin = (uname, pass) => {
+
+    return new Promise((resolve, reject) => {
+        pool.query(`SELECT * FROM Users WHERE username = ? AND password = ?`, [uname, pass], (err, results) => {
+            if (err) {
                 console.log('ERROR: .authLogin()');
                 return reject(err);
             }

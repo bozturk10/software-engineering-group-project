@@ -98,6 +98,42 @@ router.get('/events/:id', async (req, res) => {
         res.sendStatus(500);
     }
 }); */
+router.post('/company/add', upload.single('myFile') ,async (req, res, next) => {
+
+    try {
+        console.log("Attached file: ", req.file); 
+        console.log("Request body: ",req.body);       
+        const file = req.file;
+        
+        if (!file) {
+            console.log("No file received");
+            res.send("No File is attached. Please add a file");
+        }
+
+        //Relative to static directory
+        let filePath = 'uploads/'+ file.filename;
+        console.log("file received: ", filePath);
+
+        var atype="LOCAL";
+        let db_result1= await db.addNewLocalAdmin(req.body.companyusername,req.body.companypassword,req.body.companyemail,atype);
+        let db_result = await db.addNewCompany(req.body.companyusername,req.body.companyname,req.body.companyaddress,filePath);
+        res.json({message:'event is added'});
+  
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+
+
+
+
+
+
+
+
+
 
 
 // Add events with image upload

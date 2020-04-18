@@ -35,9 +35,9 @@ app.get('/check', async (req, res) => {
 
 //Call admin dashboard page TO ADD NEW EVENT
 app.get('/new-event', (req, res) => {
-    try{
+    try {
         res.sendFile(path.resolve('static/web-pages/admin-dashboard/add_event.html'));
-    }catch(er){
+    } catch (er) {
         throw er;
     }
 });
@@ -82,31 +82,32 @@ app.post('/auth', async function (request, response) {
     console.log('Authentication request: ', request.body);
     var username = request.body.username;
     var password = request.body.password;
-
+    console.log(username);
+    console.log(password);
     if (username && password) {
         //Validation
         try {
 
             let results = await db.authLogin(username, password);
             console.log(results);
-            
-            //Get the user type 
-            var string=JSON.stringify(results);
-            var json =  JSON.parse(string);
-            let utype=json[0].usertype;
-            
+
             if (results.length > 0) {
 
-                if (utype=="CUSTOMER"){
+                //Get the user type 
+                var string = JSON.stringify(results);
+                var json = JSON.parse(string);
+                let utype = json[0].usertype;
+
+                if (utype == "CUSTOMER") {
                     request.session.loggedin = true;
                     request.session.username = username;
                     //response.json(results);
                     response.redirect('/events');
                     //console.log("ege selam");
-    
+
                 }
 
-                else if (utype=="GLOBAL"){
+                else if (utype == "GLOBAL") {
                     request.session.loggedin = true;
                     request.session.username = username;
                     response.redirect('/gadmin');
@@ -114,12 +115,12 @@ app.post('/auth', async function (request, response) {
 
                 }
 
-                else if (utype=="LOCAL"){
+                else if (utype == "LOCAL") {
 
 
 
                 }
-                
+
             } else {
                 //response.json({warning: "Incorrect credentials"});
                 response.send('Incorrect Username and/or Password!');
@@ -166,6 +167,7 @@ app.get('/signup', (req, res) => {
 });
 
 app.post('/createUser', async function (request, response) {
+
     console.log('Authentication request: ', request.body);
     var username = request.body.uname;
     var password = request.body.password;
@@ -176,7 +178,7 @@ app.post('/createUser', async function (request, response) {
     try {
         let results = await db.addNewUser(username, password, email, name, surname);
         let results2 = await db.authLogin(username, password);
-        
+
         if (results2.length > 0) {
             request.session.loggedin = true;
             request.session.username = username;
@@ -194,19 +196,22 @@ app.post('/createUser', async function (request, response) {
 });
 
 app.get('/gadmin', (req, res) => {
+
     try {
-        res.sendFile(path.resolve('static/web-pages/admin-dashboard/global-admin.html'));
-    }
-    catch (e) {
+        if (req.session.loggedin) {
+            //res.send('Welcome back, ' + req.session.username + '!');
+            res.sendFile(path.resolve('static/web-pages/admin-dashboard/global-admin.html'));
+        }
+        else {
+            res.send('Please login to view this page!');
+        }
+    } catch (e) {
         console.log(e);
         res.sendStatus(500);
     }
-
-
-
 });
 
-app.get('/global', (req, res) => {
+app.get('/admin', (req, res) => {
 
     try {
         res.sendFile(path.resolve('static/web-pages/login-signup/login-admin.html'));
