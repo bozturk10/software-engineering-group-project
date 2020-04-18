@@ -142,10 +142,12 @@ db.getEvents = () => {
 };
 
 db.getEventById = (id) => {
-    return new Promise((resolve, reject) => {
-        pool.query(`SELECT * FROM Events WHERE eId = ?`, [id], (err, results) => {
-            if (err) {
-                console.log('ERROR: .getUserById()');
+
+    return new Promise( (resolve, reject) => {
+        pool.query(`SELECT * FROM Events WHERE eId = ?`, [id] ,(err, results) => {
+            if(err){
+                console.log('ERROR: .getEventById()');
+
                 return reject(err);
             }
 
@@ -171,7 +173,6 @@ db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
     });
 };
 /*
-    
 
 */
 /* ****************  Login Authentication    ***************** */

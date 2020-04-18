@@ -6,8 +6,17 @@ var path = require('path');
 // TO-DO Encrypt password before sending to database
 //const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const staticPath = path.resolve(__dirname, '..', 'static');
+console.log("Current directory:", __dirname);
+console.log('static path: ', staticPath);
 
 const app = express();
+
+//Render engine config
+//In html syntax <%= var %>
+app.set('views', process.cwd() + '/views');
+app.engine('html', require('ejs').renderFile);  
+
 
 //Servin api calls
 app.use('/api', apiRouter);
@@ -16,12 +25,33 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-const staticPath = path.resolve(__dirname, '..', 'static');
 //Html static file root 
 app.use(express.static(process.cwd() + '/static'));
 
-console.log("Current directory:", __dirname);
-console.log('static path: ', staticPath);
+app.get('/getEventDetailPage/:eid', async function (req, res){
+
+    try {
+        let eid = req.params.eid;
+        console.log(eid);
+        let event = await db.getEventById(eid);
+        console.log("Event: ",event);
+        //If you render relative path static/views/
+        res.render('event-detail.html', {
+            eId: event.eId,
+            eTitle: event.title,
+            eDetail: event.detail,
+            eAddress: event.address,
+            eDate: event.date,
+            eCapacity: event.capacity,
+            eStatus: event.status,
+            eImagePath: event.imagePath
+            //cId: event.cId;
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    
+});
 
 
 app.get('/check', async (req, res) => {
@@ -78,7 +108,7 @@ app.get('/login', (req, res) => {
     }
 });
 
-app.post('/auth', async function (request, response) {
+app.post('/auth', async (request, response) => {
     console.log('Authentication request: ', request.body);
     var username = request.body.username;
     var password = request.body.password;
@@ -112,12 +142,9 @@ app.post('/auth', async function (request, response) {
                     request.session.username = username;
                     response.redirect('/gadmin');
 
-
                 }
 
                 else if (utype == "LOCAL") {
-
-
 
                 }
 
@@ -138,6 +165,11 @@ app.post('/auth', async function (request, response) {
     }
 });
 
+app.get('/logout', (req, res) => {
+    console.log('Log out request is recieved');
+    req.session.loggedin = false;
+    res.redirect('/home');
+});
 //TO-DO app.post('/logout')
 
 app.get('/events', function (req, res) {

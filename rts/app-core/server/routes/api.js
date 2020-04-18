@@ -53,8 +53,7 @@ router.get('/users/:id', async (req, res, next) => {
 
 router.post('/users/add', async (req, res) => {
     try {
-        console.log('Request Body: ', req.body );
-        
+        console.log('Request Body: ', req.body );       
         let result = await db.addNewUser(req.body.uname, req.body.password, req.body.email, req.body.name, req.body.surname);
         res.json(result);
     } catch (e) {
@@ -75,16 +74,15 @@ router.get('/events/', async (req, res, next) => {
 });
 
 //get event by id
-router.get('/events/:id', async (req, res) => {
+router.get('/events/:id',  async (req, res) => {
     try {
-        let results = await db.getEventById(req.params.id);
-        res.json(results);
+        let result =  await db.getEventById(req.params.id);
+        res.json(result);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
     }
 });
- 
 
 //Add event without image upload
 /* router.post('/events/add', async (req, res) => {

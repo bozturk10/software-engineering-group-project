@@ -17,7 +17,7 @@ xhttp.onreadystatechange = function () {
 
                 var card_img = document.createElement('img');
                 card_img.setAttribute('class', 'card-img-top');
-                card_img.setAttribute('src', event.imagePath);
+                card_img.setAttribute('src', '/' + event.imagePath);
                 card_img.setAttribute('data-holder-rendered', true );
                 card_img.style.height = "225px";
                 card_img.style.width = "100%";
@@ -32,8 +32,9 @@ xhttp.onreadystatechange = function () {
                     var d_flex = document.createElement('div');
                     d_flex.setAttribute('class', 'd-flex justify-content-between align-items-center');
                     d_flex.innerHTML = "<div class='btn-group'>" +
-                                          "<button type='button' class='btn btn-sm btn-outline-secondary'>View</button>" +
-                                          "<button type='button' class='btn btn-sm btn-outline-secondary'>Buy</button>" +
+                                          "<a href='/getEventDetailPage/" + event.eId + "'>" +
+                                           "<button type='button' class='btn btn-sm btn-outline-secondary'>View</button> </a>" +
+                                          "<button href='' type='button' class='btn btn-sm btn-outline-secondary'>Buy</button>" +
                                         "</div>";
 
                 card_body.appendChild(p);
