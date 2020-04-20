@@ -187,6 +187,28 @@ db.addNewEvent = (title, detail, address, date, capacity, imagePath) => {
             });
     });
 };
+
+/*Get all tickets of a customer */
+db.getActiveTicketsById = (id) => {
+
+    return new Promise( (resolve, reject) => {
+
+    querystr=`SELECT E.eType as eventtype ,E.date as eventdate ,E.title, E.address as eventaddress,T.peoplenumber, T.createdAt as purchasedate , C.name as companyname
+            FROM Tickets T JOIN Events E ON T.eId=E.eId JOIN Companies AS C ON C.id = E.cId 
+            where T.userid=? and T.status='ACTIVE' ; ` ; 
+        pool.query(querystr, [id] ,(err, results) => {
+        if(err){
+            console.log('ERROR: .getTicketsById()');
+
+            return reject(err);
+            }
+        return resolve(results);
+        });
+    });
+};
+
+
+
 /*
 
 */
