@@ -19,7 +19,8 @@ const pool = mysql.createPool({
     user: 'doadmin',
     database: 'reservations',
     host: 'cs308db-do-user-7358055-0.a.db.ondigitalocean.com',
-    port: '25060'
+    port: '25060',
+    multipleStatements:true 
 });
 
 let db = {};
@@ -206,6 +207,25 @@ db.getActiveTicketsById = (id) => {
         });
     });
 };
+
+
+//decrease remaining capacity of event and create tickets for the user
+db.addNewTicket = (userid,peoplenumber,eId) => {
+    return new Promise((resolve, reject) => {
+        pool.query(`UPDATE Events SET remainingseat = remainingseat - ? WHERE Events.eId =? ;
+                    INSERT INTO Tickets (userid, peoplenumber,status, eId) VALUES( ?, ?, 'ACTIVE',?);`
+            , [peoplenumber,eId ,userid,peoplenumber,eId], (err, results) => {
+
+                if (err) {
+                    console.log('ERROR: .addNewTicket()');
+                    return reject(err);
+                }
+                console.log(results);
+                return resolve({ message: 'ticket is purchased successfully' });
+            });
+    });
+};
+
 
 
 

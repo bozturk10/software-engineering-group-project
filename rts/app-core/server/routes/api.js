@@ -97,6 +97,8 @@ router.get('/events/:id',  async (req, res) => {
         res.sendStatus(500);
     }
 }); */
+
+//company
 router.post('/company/add', upload.single('myFile') ,async (req, res, next) => {
 
     try {
@@ -123,6 +125,29 @@ router.post('/company/add', upload.single('myFile') ,async (req, res, next) => {
         res.sendStatus(500);
     }
 });
+
+
+//tickets
+router.post('/ticket/buy/:eid', async (req, res) => {
+    try {
+        console.log('berko' );   
+        console.log('Request Body: ', req.body );   
+        let event= await db.getEventById(req.params.eid);
+        if(event.remainingseat < req.body.peoplenumber   ){
+            res.send("no seats left for this event");
+        }
+        else {
+
+            let result = await db.addNewTicket(req.body.userid,req.body.peoplenumber,req.params.eid);
+            res.json(result);
+
+        }
+
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+})
 
 
 
