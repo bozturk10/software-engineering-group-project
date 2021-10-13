@@ -15,10 +15,10 @@ let userID;
 
 const pool = mysql.createPool({
     connectionLimit: 10,
-    password: 'lomdyrob8p6pb56g',
-    user: 'doadmin',
+    password: 'xxx',
+    user: 'xxx',
     database: 'reservations',
-    host: 'cs308db-do-user-7358055-0.a.db.ondigitalocean.com',
+    host: 'xxx.db.ondigitalocean.com',
     port: '25060',
     multipleStatements:true 
 });
